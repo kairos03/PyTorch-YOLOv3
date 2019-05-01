@@ -19,6 +19,7 @@ def create_modules(module_defs):
     """
     hyperparams = module_defs.pop(0)
     output_filters = [int(hyperparams["channels"])]
+    groups = int(hyperparams["groups"])
     module_list = nn.ModuleList()
     for module_i, module_def in enumerate(module_defs):
         modules = nn.Sequential()
@@ -40,7 +41,8 @@ def create_modules(module_defs):
                 ),
             )
             if bn:
-                modules.add_module(f"batch_norm_{module_i}", nn.BatchNorm2d(filters, momentum=0.9, eps=1e-5))
+                # modules.add_module(f"batch_norm_{module_i}", nn.BatchNorm2d(filters, momentum=0.9, eps=1e-5))
+                modules.add_module(f"group_norm_{module_i}", nn.GroupNorm(groups, filters, eps=1e-5))
             if module_def["activation"] == "leaky":
                 modules.add_module(f"leaky_{module_i}", nn.LeakyReLU(0.1))
 
